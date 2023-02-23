@@ -79,18 +79,18 @@ void runAll(int motorCount, Adafruit_DCMotor* motors[], int direction) {
 
 //rear-wheel-drive
 void runRWD(int direction) {
-  runAll(2, {motors[0], motors[1]}, direction);
+  runAll(2, {mot1, mot2}, direction);
 }
 
 void turn(char[] direction) {
   switch (direction) {
     case "left":
-      runAll(2, {motors[0], motors[2]}, FORWARD);
-      runAll(2, {motors[1], motors[3]}, BACKWARD);
+      runAll(2, {mot1, mot2}, FORWARD);
+      runAll(2, {mot4, mot3}, BACKWARD);
       break;
     case "right":
-      runAll(2, {motors[0], motors[2]}, BACKWARD);
-      runAll(2, {motors[1], motors[3]}, FORWARD);
+      runAll(2, {mot1, mot2}, BACKWARD);
+      runAll(2, {mot4, mot3}, FORWARD);
       break;
     default:
       runAll(4, motors, RELEASE);
