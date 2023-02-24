@@ -20,6 +20,7 @@ Adafruit_DCMotor* mot4 = AFMS.getMotor(4);
 
 //array of motor pointers to conduct actions on all four
 Adafruit_DCMotor* motors = [mot1, mot2, mot3, mot4];
+//use MOTOR_COUNT to store length of array
 const int MOTOR_COUNT = 4;
 
 void setup() {
@@ -31,12 +32,20 @@ void setup() {
   }
   Serial.println("Motor Shield detected.");
 
-  //init speed to max, but send no power
+  //init speed to max, but send no signal
   setSpeedAll(MOTOR_COUNT, motors, 255);
   runAll(MOTOR_COUNT, motors, RELEASE);
 }
 
 void loop() {
+  testMotors();
+}
+
+/*
+ * @debug
+ * use this function for testing all the util functions
+*/
+void testMotors() {
   //drive forward
   Serial.println("Driving forward");
   runRWD(FORWARD);
