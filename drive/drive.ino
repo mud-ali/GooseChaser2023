@@ -18,9 +18,8 @@ Adafruit_DCMotor* mot_BR = AFMS.getMotor(2);
 Adafruit_DCMotor* mot_BL = AFMS.getMotor(3);
 Adafruit_DCMotor* mot_FL = AFMS.getMotor(4);
 
-//use MOTOR_COUNT to store length of array
 const int MOTOR_COUNT = 4;
-//array of motor pointers to conduct actions on all four
+//array of motors to conduct actions on all four
 Adafruit_DCMotor* motors[MOTOR_COUNT] = {mot_FL, mot_BL, mot_FR, mot_BR};
 
 void setup() {
@@ -125,10 +124,7 @@ void runAll(int motorCount, Adafruit_DCMotor* motors[], int direction) {
   }
 }
 
-//rear-wheel-drive
 void runRWD(int direction) {
-  // Adafruit_DCMotor* RWD[] = {mot_BL, mot_BR};
-  // runAll(2, RWD, direction);
   mot_BL->run(BACKWARD);
   mot_BR->run(FORWARD);  
 }
