@@ -107,6 +107,24 @@ void testMotors() {
   delay(DRIVE_TIME);
 }
 
+void patrolField(int xTime, int turnTime, int rows) {
+  for (int i=0;i<rows;i++) {
+    runAll(MOTOR_COUNT, motors, FORWARD);
+    delay(xTime);
+    runAll(MOTOR_COUNT, motors, RELEASE);
+    
+    turn("right");
+    delay(turnTime);
+    runAll(MOTOR_COUNT, motors, FORWARD);
+    delay(turnTime);
+    runAll(MOTOR_COUNT, motors, RELEASE);
+
+    turn("right");
+    delay(turnTime);
+    runAll(MOTOR_COUNT, motors, RELEASE);
+  }
+}
+
 void setSpeedAll(int motorCount, Adafruit_DCMotor* motors[], int speed) {
   int motorIndex;
   for (motorIndex=0;motorIndex<motorCount;motorIndex++) {
