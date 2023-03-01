@@ -2,6 +2,7 @@
  * @author Mudasir Ali
  * Contact: mudali25@bergen.org
  * Created at 2/23/2023
+ * Modified 3/01/2023
  * Some portions modified from Adafruit 
     MotorShield Example Code
  * 
@@ -34,17 +35,34 @@ void setup() {
   Serial.println("Motor Shield detected.");
 
   //init speed to max, but send no movement signal
-  setSpeedAll(MOTOR_COUNT, motors, 255);
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  setSpeedAll(255);
+  runAll(RELEASE);
 }
 
 void loop() {
-  setSpeedAll(4, motors, 255);
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  setSpeedAll(255);
+  runAll(RELEASE);
 
-  testMotors();
+  display();
+
+  delay(4000);
+}
+
+/*
+ * @debug
+ * use to display working drive
+ *
+*/
+void display() {
+  runRWD(FORWARD);
   delay(3000);
-  runAll(MOTOR_COUNT, motors, RELEASE);
+
+  Serial.println("about to go rev");
+  runRWD(BACKWARD);
+  delay(3000);
+
+  Serial.println("Done testing");
+  runAll(RELEASE);
 }
 
 /*
@@ -54,15 +72,16 @@ void loop() {
 */
 void testDirs() {
   Serial.println("about to go fwd");
-  runAll(MOTOR_COUNT, motors, FORWARD);
+
+  runAll(FORWARD);
   delay(3000);
 
   Serial.println("about to go rev");
-  runAll(MOTOR_COUNT, motors, BACKWARD);
+  runAll(BACKWARD);
   delay(3000);
 
   Serial.println("Done testing");
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  runAll(RELEASE);
 }
 
 /*
@@ -75,22 +94,22 @@ void testMotors() {
 
   //drive forward
   Serial.println("Driving forward");
-  // runAll(MOTOR_COUNT, motors, FORWARD);
-  // comment the above line and remove the following one to test only the RWD
+  // runAll(FORWARD);
   runRWD(FORWARD);
   delay(DRIVE_TIME);
   //stop
   Serial.println("Stopping");
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  runAll(RELEASE);
   delay(PAUSE_TIME);
   
   //drive backward
   Serial.println("Driving backward");
-  runRWD(BACKWARD);
+  runAll(FORWARD);
+  // runRWD(BACKWARD);
   delay(DRIVE_TIME);
   //stop
   Serial.println("Stopping");
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  runAll(RELEASE);
   delay(PAUSE_TIME);
 
   //turn left
@@ -99,7 +118,7 @@ void testMotors() {
   delay(DRIVE_TIME);
   //stop
   Serial.println("Stopping");
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  runAll(RELEASE);
   delay(PAUSE_TIME);
 
   //turn right
@@ -108,71 +127,105 @@ void testMotors() {
   delay(DRIVE_TIME);
   //stop
   Serial.println("Stopping");
-  runAll(MOTOR_COUNT, motors, RELEASE);
+  runAll(RELEASE);
   delay(DRIVE_TIME);
 }
 
+/*
+ * @brief simulated patrolling of a field
+ * @param xTime - time to go across length of field
+ * @param turnTime - the amount of time needed to turn 90deg
+ * @param rows - number of times to go across length of field
+ *
+*/
 void patrolField(int xTime, int turnTime, int rows) {
   for (int i=0;i<rows;i++) {
-    runAll(MOTOR_COUNT, motors, FORWARD);
+    runAll(FORWARD);
     delay(xTime);
-    runAll(MOTOR_COUNT, motors, RELEASE);
+    runAll(RELEASE);
     
     turn("right");
     delay(turnTime);
-    runAll(MOTOR_COUNT, motors, FORWARD);
+    runAll(FORWARD);
     delay(turnTime);
-    runAll(MOTOR_COUNT, motors, RELEASE);
+    runAll(RELEASE);
 
     turn("right");
     delay(turnTime);
-    runAll(MOTOR_COUNT, motors, RELEASE);
+    runAll(RELEASE);
   }
 }
 
-void setSpeedAll(int motorCount, Adafruit_DCMotor* motors[], int speed) {
+/*
+ * @util
+ * @brief sets speed of all motors to the same value
+*/
+void setSpeedAll(int speed) {
   mot_FL->setSpeed(speed);
   mot_BR->setSpeed(speed);
   mot_BL->setSpeed(speed);
   mot_FR->setSpeed(speed);
 }
 
-void runAll(int motorCount, Adafruit_DCMotor* motors[], int direction) {
+/*
+ * @util
+ * @brief runs all motors in the same direction
+*/
+void runAll(int direction) {
   mot_FL->setSpeed(255);
-  mot_BR->setSpeed(255);
-  mot_BL->setSpeed(255);
-  mot_FR->setSpeed(255);
-
-  mot_FR->run(direction);
-  mot_BR->run(direction);
-  mot_BL->run(direction);
   mot_FL->run(direction);
+
+  mot_BR->setSpeed(255);
+  mot_BR->run(direction);
+
+  mot_BL->setSpeed(255);
+  mot_BL->run(direction);
+
+  mot_FR->setSpeed(255);
+  mot_FR->run(direction);
 }
 
+/*
+ * @util
+ * @brief runs back motors in the same direction
+*/
 void runRWD(int direction) {
+  mot_BL->setSpeed(255);
+  mot_BR->setSpeed(255);
+
   mot_BL->run(direction);
   mot_BR->run(direction);  
 }
 
+//requires ~18 volts to run all motors
 void turn(const char* direction) {
   if (strcmp(direction, "left") == 0) {
-      mot_FR->run(FORWARD); //problems
-      mot_BL->run(BACKWARD);
-      mot_BR->run(FORWARD); 
+      mot_FL->setSpeed(255);
       mot_FL->run(BACKWARD);
+
+      mot_BR->setSpeed(255);
+      mot_BR->run(FORWARD);
+
+      // mot_BL->setSpeed(255);
+      // mot_BL->run(BACKWARD);
+
+      // mot_FR->setSpeed(255);
+      // mot_FR->run(FORWARD);
+
   } else if (strcmp(direction, "right") == 0) {
-      mot_FR->run(BACKWARD); //problems
-      mot_BL->run(FORWARD);
-      mot_BR->run(BACKWARD); 
+      mot_FL->setSpeed(255);
       mot_FL->run(FORWARD);
+
+      mot_BR->setSpeed(255);
+      mot_BR->run(BACKWARD);
+
+      // mot_BL->setSpeed(255);
+      // mot_BL->run(FORWARD);
+
+      // mot_FR->setSpeed(255);
+      // mot_FR->run(BACKWARD);
   } else { 
-      runAll(4, motors, RELEASE);
+      runAll(RELEASE);
       Serial.println("Invalid direction");
   }
-}
-
-int getOppDir(int direction) {
-  if (direction == 1) return 2; 
-  if (direction == 2) return 1;
-  return 3;
 }
