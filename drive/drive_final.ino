@@ -40,9 +40,7 @@ void setup() {
 void loop() {
   setSpeedAll(255);
   runAll(RELEASE);
-
   display();
-
   delay(4000);
 }
 
@@ -59,61 +57,6 @@ void display() {
   delay(3000);
 
   runAll(RELEASE);
-}
-
-/*
- * @debug
- * use to test what backwards or forwards means to a motor
- *
-*/
-void testDirs() {
-
-  runAll(FORWARD);
-  delay(3000);
-
-  runAll(BACKWARD);
-  delay(3000);
-
-  runAll(RELEASE);
-}
-
-/*
- * @debug
- * use this function for testing all the util functions
-*/
-void testMotors() {
-  const int DRIVE_TIME = 5000;
-  const int PAUSE_TIME = 1000;
-
-  //drive forward
-  // runAll(FORWARD);
-  runRWD(FORWARD);
-  delay(DRIVE_TIME);
-  //stop
-  runAll(RELEASE);
-  delay(PAUSE_TIME);
-  
-  //drive backward
-  runAll(FORWARD);
-  // runRWD(BACKWARD);
-  delay(DRIVE_TIME);
-  //stop
-  runAll(RELEASE);
-  delay(PAUSE_TIME);
-
-  //turn left
-  turn("left");
-  delay(DRIVE_TIME);
-  //stop
-  runAll(RELEASE);
-  delay(PAUSE_TIME);
-
-  //turn right
-  turn("right");
-  delay(DRIVE_TIME);
-  //stop
-  runAll(RELEASE);
-  delay(DRIVE_TIME);
 }
 
 /*
