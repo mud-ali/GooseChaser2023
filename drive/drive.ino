@@ -57,7 +57,6 @@ void display() {
   runRWD(FORWARD);
   delay(3000);
 
-  Serial.println("about to go rev");
   runRWD(BACKWARD);
   delay(3000);
 
