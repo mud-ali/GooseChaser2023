@@ -13,14 +13,16 @@
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
 //motor references 
-Adafruit_DCMotor* mot_FR = AFMS.getMotor(1);
-Adafruit_DCMotor* mot_BR = AFMS.getMotor(2);
-Adafruit_DCMotor* mot_BL = AFMS.getMotor(3);
-Adafruit_DCMotor* mot_FL = AFMS.getMotor(4);
+Adafruit_DCMotor* mot_BR = AFMS.getMotor(1);
+Adafruit_DCMotor* mot_FR = AFMS.getMotor(2);
+Adafruit_DCMotor* mot_FL = AFMS.getMotor(3);
+Adafruit_DCMotor* mot_BL = AFMS.getMotor(4);
 
 const int MOTOR_COUNT = 4;
 //array of motors to conduct actions on all four
 Adafruit_DCMotor* motors[MOTOR_COUNT] = {mot_FL, mot_BL, mot_FR, mot_BR};
+Adafruit_DCMotor* right_wheels[2] = {mot_FR, mot_BR};
+Adafruit_DCMotor* left_wheels[2] = {mot_FL, mot_BL};
 
 void setup() {
   Serial.begin(9600);
@@ -37,9 +39,12 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("Testing");
+  setSpeedAll(4, motors, 255);
+  runAll(MOTOR_COUNT, motors, RELEASE);
+
   testMotors();
-  delay(6000);
+  delay(3000);
+  runAll(MOTOR_COUNT, motors, RELEASE);
 }
 
 /*
@@ -70,9 +75,9 @@ void testMotors() {
 
   //drive forward
   Serial.println("Driving forward");
-  runAll(MOTOR_COUNT, motors, FORWARD);
+  // runAll(MOTOR_COUNT, motors, FORWARD);
   // comment the above line and remove the following one to test only the RWD
-  // runRWD(FORWARD);
+  runRWD(FORWARD);
   delay(DRIVE_TIME);
   //stop
   Serial.println("Stopping");
@@ -126,38 +131,40 @@ void patrolField(int xTime, int turnTime, int rows) {
 }
 
 void setSpeedAll(int motorCount, Adafruit_DCMotor* motors[], int speed) {
-  int motorIndex;
-  for (motorIndex=0;motorIndex<motorCount;motorIndex++) {
-    motors[motorIndex]->setSpeed(speed);
-  }
+  mot_FL->setSpeed(speed);
+  mot_BR->setSpeed(speed);
+  mot_BL->setSpeed(speed);
+  mot_FR->setSpeed(speed);
 }
 
 void runAll(int motorCount, Adafruit_DCMotor* motors[], int direction) {
-  //Note: M3 and M4 go backwards
-  int motorIndex;
-  for (motorIndex=0;motorIndex<motorCount;motorIndex++) {
-    motors[motorIndex]->run(RELEASE);
-    //swap dir for M3 & M4 (index 0 or 1)
-    motors[motorIndex]->run(motorIndex < 2 ? getOppDir(direction) : direction);
-  }
+  mot_FL->setSpeed(255);
+  mot_BR->setSpeed(255);
+  mot_BL->setSpeed(255);
+  mot_FR->setSpeed(255);
+
+  mot_FR->run(direction);
+  mot_BR->run(direction);
+  mot_BL->run(direction);
+  mot_FL->run(direction);
 }
 
 void runRWD(int direction) {
-  mot_BL->run(BACKWARD);
-  mot_BR->run(FORWARD);  
+  mot_BL->run(direction);
+  mot_BR->run(direction);  
 }
 
 void turn(const char* direction) {
-  Adafruit_DCMotor* right_wheels[] = {mot_FR, mot_BR};
-  Adafruit_DCMotor* left_wheels[] = {mot_FL, mot_BL};
   if (strcmp(direction, "left") == 0) {
-      runAll(2, right_wheels, FORWARD);
-      runAll(2, left_wheels, FORWARD); //this is actually backwards
-      delay(1000);
+      mot_FR->run(FORWARD); //problems
+      mot_BL->run(BACKWARD);
+      mot_BR->run(FORWARD); 
+      mot_FL->run(BACKWARD);
   } else if (strcmp(direction, "right") == 0) {
-      runAll(2, right_wheels, BACKWARD);
-      runAll(2, left_wheels, BACKWARD); //this is actually forwards
-      delay(1000);
+      mot_FR->run(BACKWARD); //problems
+      mot_BL->run(FORWARD);
+      mot_BR->run(BACKWARD); 
+      mot_FL->run(FORWARD);
   } else { 
       runAll(4, motors, RELEASE);
       Serial.println("Invalid direction");
@@ -165,7 +172,7 @@ void turn(const char* direction) {
 }
 
 int getOppDir(int direction) {
-  if (direction == FORWARD) return BACKWARD; 
-  if (direction == BACKWARD) return FORWARD; 
-  if (direction == RELEASE) return RELEASE;
+  if (direction == 1) return 2; 
+  if (direction == 2) return 1;
+  return 3;
 }
