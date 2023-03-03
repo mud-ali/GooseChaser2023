@@ -2,7 +2,7 @@
  * @author Mudasir Ali
  * Contact: mudali25@bergen.org
  * Created at 2/23/2023
- * Modified 3/01/2023
+ * Modified 3/03/2023
  * Some portions modified from Adafruit 
     MotorShield Example Code
  * 
@@ -26,8 +26,6 @@ Adafruit_DCMotor* right_wheels[2] = {mot_FR, mot_BR};
 Adafruit_DCMotor* left_wheels[2] = {mot_FL, mot_BL};
 
 void setup() {
-  Serial.begin(9600);
-
   if (!AFMS.begin()) {
     while (1);
   }
@@ -40,8 +38,12 @@ void setup() {
 void loop() {
   setSpeedAll(255);
   runAll(RELEASE);
-  display();
+  delay(1000);
+
+  // display();
   delay(4000);
+  runAll(RELEASE);
+
 }
 
 /*
@@ -51,12 +53,15 @@ void loop() {
 */
 void display() {
   runRWD(FORWARD);
-  delay(3000);
+  delay(2000);
+  
+  runAll(RELEASE);
+  delay(2000);
 
   runRWD(BACKWARD);
-  delay(3000);
-
+  delay(2000);
   runAll(RELEASE);
+
 }
 
 /*
@@ -111,6 +116,8 @@ void runAll(int direction) {
 
   mot_FR->setSpeed(255);
   mot_FR->run(direction);
+
+  delay(500); //minimum delay
 }
 
 /*
