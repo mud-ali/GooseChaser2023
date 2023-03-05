@@ -40,7 +40,7 @@ void loop() {
   runAll(RELEASE);
   delay(1000);
 
-  // display();
+  display();
   delay(4000);
   runAll(RELEASE);
 
